@@ -65,6 +65,8 @@ public class PersonMoveSc : MonoBehaviour
     private enum State { Gr, Air}
 
     public float GrLerpSpeed;
+    public float AirLerpSpeed;
+
 
 
     private void Start()
@@ -81,6 +83,7 @@ public class PersonMoveSc : MonoBehaviour
     {
         keysVector = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
         keysVector = YRot(keysVector, cm.forceXRot);
+        keysVector = keysVector.normalized * Mathf.Min(keysVector.sqrMagnitude, 1);
         if (IsGrounded(ref Hit))
         {
             velocity.x = Mathf.Lerp(velocity.x, keysVector.x * Speed, Time.deltaTime * GrLerpSpeed);
@@ -93,7 +96,9 @@ public class PersonMoveSc : MonoBehaviour
         else
         { 
             YSpeed -= gravity * Time.deltaTime;
-        
+            velocity.x = Mathf.Lerp(velocity.x, keysVector.x * Speed, Time.deltaTime * AirLerpSpeed);
+            velocity.y = Mathf.Lerp(velocity.y, keysVector.y * Speed, Time.deltaTime * AirLerpSpeed);
+
         }
         cc.Move(new Vector3(velocity.x, YSpeed, velocity.y) * Time.deltaTime);
 
