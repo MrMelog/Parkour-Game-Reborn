@@ -18,6 +18,9 @@ public class PersonMoveSc : MonoBehaviour
     public float airAcsSpeed = 0.1f;
     public float MaxSprintPoints;
 
+    public float friction;
+    public float acceleration;
+
     private float jmpDelay;
 
     private float YSpeed;
@@ -53,6 +56,16 @@ public class PersonMoveSc : MonoBehaviour
 
     private RaycastHit Hit;
 
+    public Vector2 velocity;
+    public float jmpVelocity;
+
+
+    public Vector2 keysVector;
+
+    private enum State { Gr, Air}
+
+    public float GrLerpSpeed;
+
 
     private void Start()
     {
@@ -66,8 +79,28 @@ public class PersonMoveSc : MonoBehaviour
 
     void Update()
     {
+        keysVector = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+        keysVector = YRot(keysVector, cm.forceXRot);
         if (IsGrounded(ref Hit))
         {
+            velocity.x = Mathf.Lerp(velocity.x, keysVector.x * Speed, Time.deltaTime * GrLerpSpeed);
+            velocity.y = Mathf.Lerp(velocity.y, keysVector.y * Speed, Time.deltaTime * GrLerpSpeed);
+            if (Input.GetKey(KeyCode.Space) && Time.time - jmpDelay > 0.2f)
+            {
+                Jump2();
+            }
+        }
+        else
+        { 
+            YSpeed -= gravity * Time.deltaTime;
+        
+        }
+        cc.Move(new Vector3(velocity.x, YSpeed, velocity.y) * Time.deltaTime);
+
+        /*
+        if (IsGrounded(ref Hit))
+        {
+            
             if (Time.time - jmpDelay > 0.2f && Hit.distance <= 1.1f)
             {
                 jmpVector.y = -0.5f;
@@ -125,6 +158,7 @@ public class PersonMoveSc : MonoBehaviour
         direct = (rotForward * VerAcs + rotRight * HorAcs).normalized * Mathf.Max(Mathf.Abs(HorAcs), Mathf.Abs(VerAcs)) * Speed * sprintMod + jmpVector;
         
         cc.Move(direct * Time.deltaTime);
+        */
         
     }
 
@@ -132,6 +166,15 @@ public class PersonMoveSc : MonoBehaviour
     private void Jump()
     {
         jmpVector = Hit.normal * JmpForce;
+        jmpDelay = Time.time;
+    }
+
+    private void Jump2()
+    {
+        Vector3 jmpVec = Hit.normal * JmpForce;
+        YSpeed = jmpVec.y;
+        velocity.x += jmpVec.x;
+        velocity.y += jmpVec.z;
         jmpDelay = Time.time;
     }
 
@@ -150,9 +193,8 @@ public class PersonMoveSc : MonoBehaviour
 
     private bool IsGrounded(ref RaycastHit _hit)
     {
-        ray = new(transform.position, transform.up * -1);
         RaycastHit[] hits;
-        hits = Physics.SphereCastAll(transform.position, 0.39f, transform.up * -1, 0.65f);
+        hits = Physics.SphereCastAll(transform.position, 0.41f, -transform.up, 0.7f);
         if (hits.Length > 1)
         {
             RaycastHit maxhit = hits[0];
@@ -161,11 +203,19 @@ public class PersonMoveSc : MonoBehaviour
                     maxhit = hit;
             }
             _hit = maxhit;
-            Debug.Log(maxhit.normal.y + "y");
-            Debug.Log(hits.Length);
+            //Debug.Log(maxhit.normal.y + "y");
+            //Debug.Log(hits.Length);
             return maxhit.normal.y > 0.5f;
         }      
         return false;
+    }
+
+    private Vector2 YRot(Vector2 vec, float degree)
+    {
+        Vector3 rVec = vec;
+        rVec.x = vec.x * Mathf.Sin(Mathf.Deg2Rad * (degree + 90)) - vec.y * Mathf.Cos(Mathf.Deg2Rad * (degree + 90));
+        rVec.y = vec.x * Mathf.Cos(Mathf.Deg2Rad * (degree + 90)) + vec.y * Mathf.Sin(Mathf.Deg2Rad * (degree + 90));
+        return rVec;
     }
 
 }

@@ -22,6 +22,7 @@ public class CameraMove : MonoBehaviour
         XRot = XRot + (Input.GetAxis("Mouse X") * MouseSens);
         cam.transform.localRotation = Quaternion.Euler(YRot, 0,0);
         player.localRotation = Quaternion.Euler(0, XRot, 0);
-        forceXRot += PersonMoveSc.GetSign(Mathf.DeltaAngle(forceXRot, XRot)) * ForceRotSpeed * Time.deltaTime;
+        //forceXRot += PersonMoveSc.GetSign(Mathf.DeltaAngle(forceXRot, XRot)) * ForceRotSpeed * Time.deltaTime;
+        forceXRot = XRot;
     }
 }

@@ -15,7 +15,7 @@ F:/UnProj/Parkour Game Reborn
 -logFile
 Logs/AssetImportWorker0.log
 -srvPort
-53726
+64276
 Successfully changed project path to: F:/UnProj/Parkour Game Reborn
 F:/UnProj/Parkour Game Reborn
 [UnityMemory] Configuration Parameters - Can be set up in boot.config
@@ -49,11 +49,11 @@ F:/UnProj/Parkour Game Reborn
     "memorysetup-temp-allocator-size-cloud-worker=32768"
     "memorysetup-temp-allocator-size-gi-baking-worker=262144"
     "memorysetup-temp-allocator-size-gfx=262144"
-Player connection [24060] Host "[IP] 26.50.137.147 [Port] 0 [Flags] 2 [Guid] 2595394388 [EditorId] 2595394388 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-B78MELS) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" joined multi-casting on [225.0.0.222:54997]...
+Player connection [1812] Host "[IP] 26.50.137.147 [Port] 0 [Flags] 2 [Guid] 1916044685 [EditorId] 1916044685 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-B78MELS) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" joined multi-casting on [225.0.0.222:54997]...
 
-Player connection [24060] Host "[IP] 26.50.137.147 [Port] 0 [Flags] 2 [Guid] 2595394388 [EditorId] 2595394388 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-B78MELS) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" joined alternative multi-casting on [225.0.0.222:34997]...
+Player connection [1812] Host "[IP] 26.50.137.147 [Port] 0 [Flags] 2 [Guid] 1916044685 [EditorId] 1916044685 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-B78MELS) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" joined alternative multi-casting on [225.0.0.222:34997]...
 
-Refreshing native plugins compatible for Editor in 2169.35 ms, found 3 plugins.
+Refreshing native plugins compatible for Editor in 5248.30 ms, found 3 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
 Initialize engine version: 2022.3.2f1 (d74737c6db50)
 [Subsystems] Discovering subsystems at path C:/Program Files/Unity/Hub/Editor/2022.3.2f1/Editor/Data/Resources/UnitySubsystems
@@ -69,9 +69,10 @@ Initialize mono
 Mono path[0] = 'C:/Program Files/Unity/Hub/Editor/2022.3.2f1/Editor/Data/Managed'
 Mono path[1] = 'C:/Program Files/Unity/Hub/Editor/2022.3.2f1/Editor/Data/MonoBleedingEdge/lib/mono/unityjit-win32'
 Mono config path = 'C:/Program Files/Unity/Hub/Editor/2022.3.2f1/Editor/Data/MonoBleedingEdge/etc'
-Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56056
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56864
 Begin MonoManager ReloadAssembly
 Registering precompiled unity dll's ...
 Register platform support module: C:/Program Files/Unity/Hub/Editor/2022.3.2f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
-Registered in 0.400522 seconds.
-- Loaded All Assemblies, in 15.161 seconds
+Registered in 0.028491 seconds.
+- Loaded All Assemblies, in 19.654 seconds
+Native extension for WindowsStandalone target not found
