@@ -7,7 +7,6 @@ public class PersonMoveSc : MonoBehaviour
 {
     [SerializeField] private CharacterController cc;
     [SerializeField] private CameraMove cm;
-    [SerializeField] private CapsuleCollider gt;
     [SerializeField] private RectTransform st;
 
     public float Speed;
@@ -18,14 +17,11 @@ public class PersonMoveSc : MonoBehaviour
     public float airAcsSpeed = 0.1f;
     public float MaxSprintPoints;
 
-    public float friction;
     public float acceleration;
 
     private float jmpDelay;
 
     private float YSpeed;
-
-    private float sprintMod;
     private float HorMove;
     private float VerMove;
 
@@ -62,10 +58,35 @@ public class PersonMoveSc : MonoBehaviour
 
     public Vector2 keysVector;
 
-    private enum State { Gr, Air}
+    private enum State { Ground, Air, Slide}
 
     public float GrLerpSpeed;
     public float AirLerpSpeed;
+    public float SlideStrenght;
+
+    private float lerpSpeed;
+
+    private float speed;
+
+    private bool _isRunning;
+
+    private bool IsRunning
+    {
+        get {
+            if (Input.GetKeyDown(KeyCode.LeftShift) && SprintPoints >= 1)
+            {
+                _isRunning = true;
+            }
+            else if (Input.GetKeyUp(KeyCode.LeftShift) || SprintPoints <= 0)
+            {
+                 _isRunning = false;
+            }
+
+            return _isRunning;
+        }
+    }
+
+    private State lastState;
 
 
 
@@ -73,10 +94,10 @@ public class PersonMoveSc : MonoBehaviour
     {
         cc = GetComponent<CharacterController>();
         cm = GetComponent<CameraMove>();
-        gt = GetComponentInChildren<CapsuleCollider>();
         Cursor.lockState = CursorLockMode.Locked;
         right = Vector3.right; forward = Vector3.forward;
         jmpDelay = 0;
+        speed = Speed;
     }
 
     void Update()
@@ -86,22 +107,53 @@ public class PersonMoveSc : MonoBehaviour
         keysVector = keysVector.normalized * Mathf.Min(keysVector.sqrMagnitude, 1);
         if (IsGrounded(ref Hit))
         {
-            velocity.x = Mathf.Lerp(velocity.x, keysVector.x * Speed, Time.deltaTime * GrLerpSpeed);
-            velocity.y = Mathf.Lerp(velocity.y, keysVector.y * Speed, Time.deltaTime * GrLerpSpeed);
-            if (Input.GetKey(KeyCode.Space) && Time.time - jmpDelay > 0.2f)
+            if (IsRunning)
+                speed = Mathf.Lerp(speed, Speed * SprintMod, Time.deltaTime * lerpSpeed);
+            else
+                speed = Mathf.Lerp(speed, Speed, Time.deltaTime * lerpSpeed * 2);
+            if (Hit.normal.y > 0.82f)
             {
-                Jump2();
+                lerpSpeed = GrLerpSpeed;
+                if (Time.time - jmpDelay > 0.2f)
+                {
+                    YSpeed = -2;
+                    if (Input.GetKey(KeyCode.Space))
+                    {
+                        Jump2();
+                    }
+                }
+                lastState = State.Ground;
             }
+            else
+            {
+                lerpSpeed = AirLerpSpeed;
+                Vector3 slideN = Hit.normal * SlideStrenght * Time.deltaTime;
+                velocity.x += slideN.x;
+                velocity.y += slideN.z;
+                if (lastState != State.Slide)
+                    velocity += keysVector * -YSpeed;
+                //YSpeed -= slideN.y;
+                lastState = State.Slide;
+            }
+
+            velocity.x = Mathf.Lerp(velocity.x, keysVector.x * speed, Time.deltaTime * lerpSpeed);
+            velocity.y = Mathf.Lerp(velocity.y, keysVector.y * speed, Time.deltaTime * lerpSpeed);
         }
         else
-        { 
+        {
+            if (IsTopCollision())                   
+                YSpeed -= Mathf.Abs(YSpeed * 0.3f);
             YSpeed -= gravity * Time.deltaTime;
-            velocity.x = Mathf.Lerp(velocity.x, keysVector.x * Speed, Time.deltaTime * AirLerpSpeed);
-            velocity.y = Mathf.Lerp(velocity.y, keysVector.y * Speed, Time.deltaTime * AirLerpSpeed);
-
+            velocity.x = Mathf.Lerp(velocity.x, keysVector.x * speed, Time.deltaTime * AirLerpSpeed);
+            velocity.y = Mathf.Lerp(velocity.y, keysVector.y * speed, Time.deltaTime * AirLerpSpeed);
+            lastState = State.Air;
         }
+        if (_isRunning)
+            SprintPoints -= Time.deltaTime;
+        else
+            SprintPoints += Time.deltaTime;
         cc.Move(new Vector3(velocity.x, YSpeed, velocity.y) * Time.deltaTime);
-
+        cm.IsRunning = IsRunning;
         /*
         if (IsGrounded(ref Hit))
         {
@@ -177,7 +229,7 @@ public class PersonMoveSc : MonoBehaviour
     private void Jump2()
     {
         Vector3 jmpVec = Hit.normal * JmpForce;
-        YSpeed = jmpVec.y;
+        YSpeed += jmpVec.y;
         velocity.x += jmpVec.x;
         velocity.y += jmpVec.z;
         jmpDelay = Time.time;
@@ -193,13 +245,20 @@ public class PersonMoveSc : MonoBehaviour
     private bool IsTopCollision()
     {
         Ray ray = new(transform.position, transform.up);
-        return Physics.Raycast(ray, 1.1f);
+        RaycastHit[] hits;
+        hits = Physics.SphereCastAll(transform.position, 0.40f, transform.up, 0.7f);
+        foreach (var item in hits)
+        {
+            if (item.transform.tag != "Player")
+                return true;
+        }
+        return false;
     }
 
     private bool IsGrounded(ref RaycastHit _hit)
     {
         RaycastHit[] hits;
-        hits = Physics.SphereCastAll(transform.position, 0.41f, -transform.up, 0.7f);
+        hits = Physics.SphereCastAll(transform.position, 0.40f, -transform.up, 0.7f);
         if (hits.Length > 1)
         {
             RaycastHit maxhit = hits[0];
@@ -211,7 +270,8 @@ public class PersonMoveSc : MonoBehaviour
             //Debug.Log(maxhit.normal.y + "y");
             //Debug.Log(hits.Length);
             return maxhit.normal.y > 0.5f;
-        }      
+        }
+        _hit = new RaycastHit();
         return false;
     }
 
