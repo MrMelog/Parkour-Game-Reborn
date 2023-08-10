@@ -373,7 +373,9 @@
 "Assets/Samples/High Definition RP/14.0.8/Procedural Sky/Runtime/ProceduralSky/ProceduralSkyRenderer.cs"
 "Assets/Scripts/CameraMove.cs"
 "Assets/Scripts/GroundedTriger.cs"
+"Assets/Scripts/InputManagerScr.cs"
 "Assets/Scripts/PersonMoveSc.cs"
+"Assets/Scripts/SpearThrowing.cs"
 "Assets/TutorialInfo/Scripts/Readme.cs"
 -langversion:9.0
 
